@@ -23,7 +23,8 @@ class Calc extends React.Component {
       input: "0",
       prevInput: "",
       initialState: true,
-      evaluated: false
+      evaluated: false,
+      doubleDecimal: false
     }
     this.handleNumber = this.handleNumber.bind(this);
     this.handleOperator = this.handleOperator.bind(this);
@@ -34,8 +35,7 @@ class Calc extends React.Component {
   }
   handleZero(e) {
     e.preventDefault();
-    if (this.state.initialState === true){
-    }else{
+    if (this.state.initialState === true) {} else {
       this.setState({
         input: this.state.input + e.target.value,
         prevInput: e.target.value
@@ -44,13 +44,13 @@ class Calc extends React.Component {
   }
   handleNumber(e) {
     e.preventDefault();
-    if(this.state.initialState === true || this.state.evaluated === true){
+    if (this.state.initialState === true || this.state.evaluated === true) {
       this.setState({
         input: e.target.value,
         initialState: false,
         evaluated: false
       })
-    }else {
+    } else {
       this.setState({
         input: this.state.input + e.target.value,
         prevInput: e.target.value,
@@ -61,13 +61,25 @@ class Calc extends React.Component {
   }
   handleOperator(e) {
     e.preventDefault();
-    if (this.state.prevInput === "+" || this.state.prevInput === "-" || this.state.prevInput === "*" || this.state.prevInput === "/") {
+    if (this.state.input[this.state.input.length - 2] === "*" &
+      this.state.input[this.state.input.length - 1] === "-" &
+      isNaN(e.target.value)
+    ) {
+      this.setState({
+        input: this.state.input.replace(
+          this.state.input[this.state.input.length -2], "").replace(
+          this.state.input[this.state.input.length -1], e.target.value
+          )
+      })
+    } else if (this.state.prevInput === "+" || this.state.prevInput === "-" ||
+      this.state.prevInput === "*" || this.state.prevInput === "/") {
       const opReplacementValue = this.state.prevInput + e.target.value;
       this.setState({
-        input: this.state.input.replace(/.$/, operatorReplacement[opReplacementValue]),
+        input: this.state.input.replace(/.$/,
+          operatorReplacement[opReplacementValue]),
         prevInput: e.target.value
       })
-    } else if(this.state.evaluated === true) {
+    } else if (this.state.evaluated === true) {
       this.setState({
         evaluated: false,
         input: this.state.input + e.target.value,
@@ -76,7 +88,8 @@ class Calc extends React.Component {
     } else {
       this.setState({
         input: this.state.input + e.target.value,
-        prevInput: e.target.value
+        prevInput: e.target.value,
+        doubleDecimal: false
       })
     }
   }
@@ -84,16 +97,17 @@ class Calc extends React.Component {
     e.preventDefault();
     this.setState({
       input: "0",
-      initialState: true
+      initialState: true,
+      doubleDecimal: false
     })
   }
   handleDecimal(e) {
     e.preventDefault();
-    if (this.state.prevInput === ".") {
-    } else {
+    if(this.state.doubleDecimal === true){
+    }else{
       this.setState({
         input: this.state.input + e.target.value,
-        prevInput: e.target.value 
+        doubleDecimal: true
       })
     }
   }
@@ -102,50 +116,140 @@ class Calc extends React.Component {
     this.setState({
       input: eval(this.state.input),
       prevInput: "",
-      evaluated: true
+      evaluated: true,
+      doubleDecimal: false
     })
   }
   render() {
-    return(
-      <div className="Calc">
-        <form onSubmit={this.handleEvaluation}>
-          <div className="row" id="display-container">
-            <h1 id="display">{this.state.input}</h1>
-          </div>
+    return ( <
+      div className = "Calc" >
+      <
+      form onSubmit = {
+        this.handleEvaluation
+      } >
+        <
+      div className = "row"
+      id = "display-container" >
+      <
+      h1 id = "display" > {
+        this.state.input
+      } < /h1> <
+      /div>
 
-          <div className="row">
-            <button className="clear" id="clear" onClick={this.handleClear}>C</button>
-            <button className="operator" id="divide" onClick={this.handleOperator} value="/">/</button>
-          </div>
+      <
+      div className = "row" >
+      <
+      button className = "clear"
+      id = "clear"
+      onClick = {
+        this.handleClear
+      } > C < /button> <
+      button className = "operator"
+      id = "divide"
+      onClick = {
+        this.handleOperator
+      }
+      value = "/" > /</button >
+    <
+      /div>
 
-          <div className="row">
-            <button id="seven" onClick={this.handleNumber} value="7">7</button>
-            <button id="eight" onClick={this.handleNumber} value="8">8</button>
-            <button id="nine" onClick={this.handleNumber} value="9">9</button>
-            <button className="operator" id="multiply" onClick={this.handleOperator} value="*">*</button>
-          </div>
+      <
+      div className = "row" >
+      <
+      button id = "seven"
+      onClick = {
+        this.handleNumber
+      }
+      value = "7" > 7 < /button> <
+      button id = "eight"
+      onClick = {
+        this.handleNumber
+      }
+      value = "8" > 8 < /button> <
+      button id = "nine"
+      onClick = {
+        this.handleNumber
+      }
+      value = "9" > 9 < /button> <
+      button className = "operator"
+      id = "multiply"
+      onClick = {
+        this.handleOperator
+      }
+      value = "*" > * < /button> <
+      /div>
 
-          <div className="row">
-            <button  id="four" onClick={this.handleNumber} value="4">4</button>
-            <button  id="five" onClick={this.handleNumber} value="5">5</button>
-            <button  id="six" onClick={this.handleNumber} value="6">6</button>
-            <button className="operator" id="subtract" onClick={this.handleOperator} value="-">-</button>
-          </div>
+      <
+      div className = "row" >
+      <
+      button id = "four"
+      onClick = {
+        this.handleNumber
+      }
+      value = "4" > 4 < /button> <
+      button id = "five"
+      onClick = {
+        this.handleNumber
+      }
+      value = "5" > 5 < /button> <
+      button id = "six"
+      onClick = {
+        this.handleNumber
+      }
+      value = "6" > 6 < /button> <
+      button className = "operator"
+      id = "subtract"
+      onClick = {
+        this.handleOperator
+      }
+      value = "-" > - < /button> <
+      /div>
 
-          <div className="row">
-            <button  id="one" onClick={this.handleNumber} value="1">1</button>
-            <button  id="two" onClick={this.handleNumber} value="2">2</button>
-            <button  id="three" onClick={this.handleNumber} value="3">3</button>
-            <button className="operator" id="add" onClick={this.handleOperator} value="+">+</button>
-          </div>
+      <
+      div className = "row" >
+      <
+      button id = "one"
+      onClick = {
+        this.handleNumber
+      }
+      value = "1" > 1 < /button> <
+      button id = "two"
+      onClick = {
+        this.handleNumber
+      }
+      value = "2" > 2 < /button> <
+      button id = "three"
+      onClick = {
+        this.handleNumber
+      }
+      value = "3" > 3 < /button> <
+      button className = "operator"
+      id = "add"
+      onClick = {
+        this.handleOperator
+      }
+      value = "+" > + < /button> <
+      /div>
 
-          <div className="row">
-            <button id="zero" onClick={this.handleZero} value="0">0</button>
-            <button className="operator" value="." id="decimal" onClick={this.handleDecimal}>.</button>
-            <button type="submit" id="equals">=</button>
-          </div>
-        </form>
-      </div>
+      <
+      div className = "row" >
+      <
+      button id = "zero"
+      onClick = {
+        this.handleZero
+      }
+      value = "0" > 0 < /button> <
+      button className = "operator"
+      value = "."
+      id = "decimal"
+      onClick = {
+        this.handleDecimal
+      } > . < /button> <
+      button type = "submit"
+      id = "equals" >= < /button> <
+      /div> <
+      /form> <
+      /div>
     )
   }
 }
